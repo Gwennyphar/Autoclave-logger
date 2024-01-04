@@ -16,8 +16,8 @@
                     <MenuItem Header="_Löschen" />
                     <MenuItem x:Name="btnSave" Header="_Speichern" Click="btnSave_Click"/>
                     <Separator />
-                    <MenuItem Header="_Schießen" />
-                    <MenuItem Header="Info" Click="btnInfo_Click"/>
+                    <MenuItem x:Name="btnExit" Header="_Schließen" Click="btnExit_Click"/>
+                    <MenuItem x:Name="btnInfo" Header="Info" Click="btnInfo_Click"/>
                 </MenuItem>
             </Menu>
         </DockPanel>

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
+using Application = System.Windows.Application;
 using System.Windows.Controls;
 using System.Windows.Media.TextFormatting;
 using static System.Net.Mime.MediaTypeNames;
@@ -22,6 +23,9 @@ namespace WpfApp1
             btnBrowse.IsEnabled = false;
         }
 
+
+        /**
+         */
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -31,6 +35,9 @@ namespace WpfApp1
             readFiles(openFileDialog);
         }
 
+
+        /**
+         */
         private void readFiles(OpenFileDialog openFileDialog)
         {
 
@@ -45,16 +52,15 @@ namespace WpfApp1
                 foreach (string filename in openFileDialog.FileNames)
                     wpfListView.Items.Add(filename);
 
-
                 foreach (string text in filetext)
                     wpfTextbox.AppendText(text);
             }
         }
-      
 
-   
 
-       private void btnSave_Click(object sender, RoutedEventArgs e)
+        /**
+         */
+        private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             // Set a variable to the Documents path.
             string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -63,16 +69,16 @@ namespace WpfApp1
             disabledBtn(docPath, currDir);
             if (File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text)))
             {
-                //disabledBtn(docPath, currDir);
                 MessageBox.Show(OutputFile(docPath, currDir, wpfDirectory.Text) + " existiert bereits.\n\nKlicke im Menü auf Neu und dann auf Speichern, um eine neue Protokolldatei zu erstellen.", "Achtung");
             }
             else
             {
-                //btnSave.IsEnabled = true;
                 createFile(docPath, currDir);
             }
         }
 
+        /**
+         */
         private void createFile(string docPath, string currDir)
         {
             // Append text to an existing file named "WriteLines.txt".
@@ -87,16 +93,25 @@ namespace WpfApp1
             }
         }
 
+
+        /**
+         */
         private static string OutputFile(string docPath, string currDir, string text)
         {
             return System.IO.Path.Combine(docPath + currDir, "Sterilisationsprotokoll_" + text.Replace('_', '-') + ".txt");
         }
 
+
+        /**
+         */
         private void wpfTextbox_TextChanged(object sender, TextChangedEventArgs e)
         {
             wpfTextbox.Focus();
         }
 
+
+        /**
+         */
         private void wpfDirectory_TextChanged(object sender, TextChangedEventArgs e)
         {
             string currDir = '/' + wpfDirectory.Text;
@@ -119,6 +134,9 @@ namespace WpfApp1
             disabledBtn(sDir, currDir);
         }
 
+
+        /**
+         */
         private void disabledBtn(string docPath, string currDir)
         {
             if ((Directory.Exists(docPath + currDir) &&  !File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text))) )
@@ -130,6 +148,9 @@ namespace WpfApp1
             }
         }
 
+
+        /**
+         */
         private void readDirectory(string[] files, string[] filetext)
         {
             if(files.Length > 0)
@@ -142,11 +163,17 @@ namespace WpfApp1
             }   
         }
 
+
+        /**
+         */
         private void wpfListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //wpfListView.SelectedItem.ToString();
         }
 
+
+        /**
+         */
         private void wpfReset_Click(object sender, RoutedEventArgs e)
         {
             clearWindows();
@@ -162,15 +189,28 @@ namespace WpfApp1
             disabledBtn(docPath, currDir);
         }
 
+
+        /**
+         */
         private void clearWindows()
         {
             wpfListView.Items.Clear();
             wpfTextbox.Clear();
         }
 
+
+        /**
+         */
         private void btnInfo_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Protokolliersoftware\nVersion: 1.0.0\n(c) 2023/"+ DateTime.Now.ToString("yy")+" Nico Anders", "Autoklav " + DateTime.Now.ToString("yy"));
+        }
+
+        /**
+         */
+        private void btnExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
