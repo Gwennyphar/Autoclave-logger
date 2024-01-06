@@ -90,7 +90,7 @@ namespace WpfApp1
         private void createFile(string docPath, string currDir)
         {
             // Append text to an existing file named "Sterilisationsprotokoll_[month-year].txt".
-            if (Directory.Exists(docPath+currDir) && !File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text)) )
+            if (Directory.Exists(docPath+currDir) && !File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text)) && !string.IsNullOrEmpty(wpfTextbox.Text))
             {
                 using (StreamWriter outputFile = new StreamWriter(OutputFile(docPath, currDir, wpfDirectory.Text), false))
                 {
