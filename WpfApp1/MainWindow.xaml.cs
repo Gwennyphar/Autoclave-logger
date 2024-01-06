@@ -40,7 +40,6 @@ namespace WpfApp1
          */
         private void readFiles(OpenFileDialog openFileDialog)
         {
-
             //Writeout
             if (openFileDialog.ShowDialog() == true)
             {
@@ -64,40 +63,38 @@ namespace WpfApp1
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             // Set a variable to the Documents path.
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string currDir = '/' + wpfDirectory.Text;
-
+            string docPath = setDocPath();
 
             SaveFileDialog save = new SaveFileDialog();
             save.Title = "Save File";
             save.Filter = "Text Files (*txt) | *.txt";
-            save.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), OutputFile("", currDir, wpfDirectory.Text) );
+            save.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), OutputFile(docPath, wpfDirectory.Text) );
 
-
-            disabledBtn(docPath, currDir);
-            if (File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text)))
+            disabledBtn(docPath);
+            if (File.Exists(OutputFile(docPath, wpfDirectory.Text)))
             {
-                MessageBox.Show(OutputFile(docPath, currDir, wpfDirectory.Text) + " existiert bereits.\n\nKlicke im Menü auf Neu und dann auf Speichern, um eine neue Protokolldatei zu erstellen.", "Achtung");
+                MessageBox.Show(OutputFile(docPath, wpfDirectory.Text) + " existiert bereits.\n\nKlicke im Menü auf Neu und dann auf Speichern, um eine neue Protokolldatei zu erstellen.", "Achtung");
             }
             else
             {
-                createFile(docPath, currDir);
+                createFile(docPath);
             }
         }
 
         /**
          */
-        private void createFile(string docPath, string currDir)
+        private void createFile(string docPath)
         {
             // Append text to an existing file named "Sterilisationsprotokoll_[month-year].txt".
-            if (Directory.Exists(docPath+currDir) && !File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text)) && !string.IsNullOrEmpty(wpfTextbox.Text))
+            if (Directory.Exists(docPath) && !File.Exists(OutputFile(docPath, wpfDirectory.Text)) && !string.IsNullOrEmpty(wpfTextbox.Text))
             {
-                using (StreamWriter outputFile = new StreamWriter(OutputFile(docPath, currDir, wpfDirectory.Text), false))
+                string date = setFileDate(wpfDirectory.Text);
+                using (StreamWriter outputFile = new StreamWriter(OutputFile(docPath, date), false))
                 {
                     outputFile.Write(wpfTextbox.Text);
                     //foreach (string text in wpfListView.Items)
                         //outputFile.WriteLine(File.ReadAllText(text)+"\n");
-                    MessageBox.Show("Sterilisationsprotokoll_" + wpfDirectory.Text.Replace('_', '-') + ".txt wurde unter " + docPath + currDir + " erstellt.", "Speichern erfolgreich");
+                    MessageBox.Show("Sterilisationsprotokoll_" + date.Replace('_', '-') + ".txt wurde unter " + docPath + " erstellt.", "Speichern erfolgreich");
                 }
             }
         }
@@ -105,9 +102,23 @@ namespace WpfApp1
 
         /**
          */
-        private static string OutputFile(string docPath, string currDir, string text)
+        private static string OutputFile(string docPath, string text)
         {
-            return System.IO.Path.Combine(docPath + currDir, "Sterilisationsprotokoll_" + text.Replace('_', '-') + ".txt");
+            text = setFileDate(text);
+            return System.IO.Path.Combine(docPath, "Sterilisationsprotokoll_" + text.Replace('_', '-') + ".txt");
+        }
+
+
+        /**
+         */
+        private static string setFileDate(string text)
+        {
+            if (text == "")
+            {
+                text = DateTime.Now.ToString("MM_yyyy");
+            }
+
+            return text;
         }
 
 
@@ -141,15 +152,16 @@ namespace WpfApp1
                 clearWindows();
                 MessageBox.Show("Der Ordner " + wpfDirectory.Text + " ist nicht vorhanden.");
             }
-            disabledBtn(sDir, currDir);
+            string docPath = setDocPath();
+            disabledBtn(docPath);
         }
 
 
         /**
          */
-        private void disabledBtn(string docPath, string currDir)
+        private void disabledBtn(string docPath)
         {
-            if ((Directory.Exists(docPath + currDir) &&  !File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text))) )
+            if ((Directory.Exists(docPath) && !File.Exists(OutputFile(docPath, wpfDirectory.Text))) )
             {
                 btnSave.IsEnabled = true;
             } else
@@ -176,23 +188,34 @@ namespace WpfApp1
 
         /**
          */
-        private void wpfListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnNew_Click(object sender, RoutedEventArgs e)
         {
-            //wpfListView.SelectedItem.ToString();
+            string docPath = setDocPath();
+            clearWindows();
+            disabledBtn(docPath);
         }
 
 
         /**
          */
-        private void btnNew_Click(object sender, RoutedEventArgs e)
+        private string setDocPath()
         {
             // Set a variable to the Documents path.
             string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string currDir = '/' + wpfDirectory.Text;
-            string textfile = OutputFile(docPath, currDir, wpfDirectory.Text);
+            return System.IO.Path.Combine(docPath + currDir);
+        }
+
+
+        /**
+         */
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            // Set a variable to the Documents path.
+            string docPath = setDocPath();
+            string textfile = OutputFile(docPath, wpfDirectory.Text);
             File.Delete(textfile);
-            clearWindows();
-            disabledBtn(docPath, currDir);
+            disabledBtn(docPath);
         }
 
 
@@ -211,6 +234,7 @@ namespace WpfApp1
         {
             MessageBox.Show("Protokolliersoftware\nVersion: 1.0.0\n(c) 2023/"+ DateTime.Now.ToString("yy")+" Nico Anders", "Autoklav " + DateTime.Now.ToString("yy"));
         }
+
 
         /**
          */
