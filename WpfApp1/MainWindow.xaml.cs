@@ -20,7 +20,7 @@ namespace WpfApp1
             InitializeComponent();
             wpfDirectory.Text = DateTime.Now.ToString("MM_yyyy");
             Title = "Autoklav v1.0 ";
-            btnBrowse.IsEnabled = false;
+            //btnBrowse.IsEnabled = false;
         }
 
 
@@ -31,7 +31,7 @@ namespace WpfApp1
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
             openFileDialog.Filter = "Text files (*.txt)|*.txt";
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalizedResources);
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             readFiles(openFileDialog);
         }
 
@@ -44,16 +44,17 @@ namespace WpfApp1
             //Writeout
             if (openFileDialog.ShowDialog() == true)
             {
+                string sDir = openFileDialog.InitialDirectory;
                 string currDir = '/'+wpfDirectory.Text;
-                string sDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 string[] files = Directory.GetFiles(sDir+currDir, "*.txt", SearchOption.TopDirectoryOnly);
                 string[] filetext = files.Select(x => File.ReadAllText(x)).ToArray();
 
                 foreach (string filename in openFileDialog.FileNames)
                     wpfListView.Items.Add(filename);
 
-                foreach (string text in filetext)
-                    wpfTextbox.AppendText(text);
+                foreach (string filename in openFileDialog.FileNames)
+                    wpfTextbox.AppendText(File.ReadAllText(filename)+"\n");
+
             }
         }
 
@@ -65,6 +66,13 @@ namespace WpfApp1
             // Set a variable to the Documents path.
             string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string currDir = '/' + wpfDirectory.Text;
+
+
+            SaveFileDialog save = new SaveFileDialog();
+            save.Title = "Save File";
+            save.Filter = "Text Files (*txt) | *.txt";
+            save.InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), OutputFile("", currDir, wpfDirectory.Text) );
+
 
             disabledBtn(docPath, currDir);
             if (File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text)))
@@ -81,13 +89,13 @@ namespace WpfApp1
          */
         private void createFile(string docPath, string currDir)
         {
-            // Append text to an existing file named "WriteLines.txt".
+            // Append text to an existing file named "Sterilisationsprotokoll_[month-year].txt".
             if (Directory.Exists(docPath+currDir) && !File.Exists(OutputFile(docPath, currDir, wpfDirectory.Text)) )
             {
                 using (StreamWriter outputFile = new StreamWriter(OutputFile(docPath, currDir, wpfDirectory.Text), false))
                 {
                     foreach (string text in wpfListView.Items)
-                        outputFile.WriteLine(File.ReadAllText(text));
+                        outputFile.WriteLine(File.ReadAllText(text)+"\n");
                     MessageBox.Show("Sterilisationsprotokoll_" + wpfDirectory.Text.Replace('_', '-') + ".txt wurde unter " + docPath + currDir + " erstellt.", "Speichern erfolgreich");
                 }
             }
@@ -106,7 +114,7 @@ namespace WpfApp1
          */
         private void wpfTextbox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            wpfTextbox.Focus();
+            //wpfTextbox.Focus();
         }
 
 
@@ -117,7 +125,7 @@ namespace WpfApp1
             string currDir = '/' + wpfDirectory.Text;
             string sDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            if (Directory.Exists(sDir+currDir))
+            if (Directory.Exists(sDir + currDir))
             {
                 string[] files = Directory.GetFiles(sDir + currDir, "*.txt", SearchOption.TopDirectoryOnly);
                 string[] filetext = files.Select(x => File.ReadAllText(x)).ToArray();
@@ -126,7 +134,8 @@ namespace WpfApp1
                     clearWindows();
                     readDirectory(files, filetext);
                 }
-            } else
+            }
+            else
             {
                 clearWindows();
                 MessageBox.Show("Der Ordner " + wpfDirectory.Text + " ist nicht vorhanden.");
@@ -174,10 +183,6 @@ namespace WpfApp1
 
         /**
          */
-        private void wpfReset_Click(object sender, RoutedEventArgs e)
-        {
-            clearWindows();
-        }
         private void btnNew_Click(object sender, RoutedEventArgs e)
         {
             // Set a variable to the Documents path.
