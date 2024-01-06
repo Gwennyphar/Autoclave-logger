@@ -94,8 +94,9 @@ namespace WpfApp1
             {
                 using (StreamWriter outputFile = new StreamWriter(OutputFile(docPath, currDir, wpfDirectory.Text), false))
                 {
-                    foreach (string text in wpfListView.Items)
-                        outputFile.WriteLine(File.ReadAllText(text)+"\n");
+                    outputFile.Write(wpfTextbox.Text);
+                    //foreach (string text in wpfListView.Items)
+                        //outputFile.WriteLine(File.ReadAllText(text)+"\n");
                     MessageBox.Show("Sterilisationsprotokoll_" + wpfDirectory.Text.Replace('_', '-') + ".txt wurde unter " + docPath + currDir + " erstellt.", "Speichern erfolgreich");
                 }
             }
