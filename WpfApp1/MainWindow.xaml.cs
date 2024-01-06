@@ -188,6 +188,14 @@ namespace WpfApp1
 
         /**
          */
+        private void wpfListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //wpfListView.SelectedItem.ToString();
+        }
+
+
+        /**
+         */
         private void btnNew_Click(object sender, RoutedEventArgs e)
         {
             string docPath = setDocPath();
@@ -195,9 +203,6 @@ namespace WpfApp1
             disabledBtn(docPath);
         }
 
-
-        /**
-         */
         private string setDocPath()
         {
             // Set a variable to the Documents path.
@@ -214,8 +219,10 @@ namespace WpfApp1
             // Set a variable to the Documents path.
             string docPath = setDocPath();
             string textfile = OutputFile(docPath, wpfDirectory.Text);
+            string date = setFileDate(wpfDirectory.Text);
             File.Delete(textfile);
             disabledBtn(docPath);
+            MessageBox.Show("Sterilisationsprotokoll_" + date.Replace('_', '-') + ".txt wurde unter " + docPath + " gelöscht.", "Löschen erfolgreich");
         }
 
 
@@ -234,7 +241,6 @@ namespace WpfApp1
         {
             MessageBox.Show("Protokolliersoftware\nVersion: 1.0.0\n(c) 2023/"+ DateTime.Now.ToString("yy")+" Nico Anders", "Autoklav " + DateTime.Now.ToString("yy"));
         }
-
 
         /**
          */
